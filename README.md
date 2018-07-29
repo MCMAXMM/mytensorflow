@@ -1,2 +1,2 @@
 # mytensorflowtest
-this code was writed to practice my tensorflow level
+this code was writed to practice my tensorflow 
