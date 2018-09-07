@@ -22,4 +22,6 @@ with tf.name_scope("get_var") as get_var:
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     print(sess.run(b))
+    #打印出未初始化的变量
+    print(session.run(tf.report_uninitialized_variables()))
 
