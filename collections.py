@@ -13,3 +13,13 @@ my_non_trainable = tf.get_variable("my_non_trainable",
 tf.add_to_collection("my_collection_name", my_local)
 #取数据
 tf.get_collection("my_collection_name")
+#一个例子
+with tf.name_scope("create") as create:
+    a=tf.get_variable("input",initializer=[1,2,3,4])
+    tf.add_to_collection("inputs",a)
+with tf.name_scope("get_var") as get_var:
+    b=tf.get_collection("inputs")
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(sess.run(b))
+
