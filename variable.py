@@ -10,7 +10,7 @@ with tf.Session() as sess:
     sess.run(tf.group(tf.local_variables_initializer(),tf.global_variables_initializer()))
     print(sess.run(my_variable))
 #
-#
+#如果initializer后面用的是initializer()来初始化的，就需要指定shape
 a=tf.get_variable("input",[2,3],initializer=tf.random_normal_initializer())
 with tf.Session() as sess:
     tf.global_variables_initializer().run()
