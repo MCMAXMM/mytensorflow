@@ -1,4 +1,37 @@
 import tensorflow as tf
+#######有关dataset的操作
+###一个关于dataset的操作还有一个是关于iterator的操作
+dataset1 = tf.data.Dataset.from_tensor_slices(tf.random_uniform([4, 10]))
+print(dataset1.output_types)  # ==> "tf.float32"
+print(dataset1.output_shapes)  # ==> "(10,)"
+
+dataset2 = tf.data.Dataset.from_tensor_slices(
+   (tf.random_uniform([4]),
+    tf.random_uniform([4, 100], maxval=100, dtype=tf.int32)))
+print(dataset2.output_types)  # ==> "(tf.float32, tf.int32)"
+print(dataset2.output_shapes)  # ==> "((), (100,))"
+
+dataset3 = tf.data.Dataset.zip((dataset1, dataset2))
+print(dataset3.output_types)  # ==> (tf.float32, (tf.float32, tf.int32))
+print(dataset3.output_shapes)  # ==> "(10, ((), (100,)))"
+
+########################################
+dataset = tf.data.Dataset.from_tensor_slices(
+   {"a": tf.random_uniform([4]),
+    "b": tf.random_uniform([4, 100], maxval=100, dtype=tf.int32)})
+print(dataset.output_types)  # ==> "{'a': tf.float32, 'b': tf.int32}"
+print(dataset.output_shapes)  # ==> "{'a': (), 'b': (100,)}"
+###################################################
+dataset1 = dataset1.map(lambda x: ...)
+
+dataset2 = dataset2.flat_map(lambda x, y: ...)
+
+# Note: Argument destructuring is not available in Python 3.
+dataset3 = dataset3.filter(lambda x, (y, z): ...)
+
+
+
+############################################3
 #第一种迭代器，这是最简单的迭代器，不用初始化，如果不调用repeat()只能使用一次
 #one-shot,
 
