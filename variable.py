@@ -4,7 +4,14 @@ import tensorflow as tf
 #a=tf.Variable(initial_value,name)
 #2.第二种
 my_variable = tf.get_variable("my_variable",initializer=np.ones((2,3)))
+#如果initailizer后面的是一个constant,get_variable中shape就不用指定了，否则会报错
 #上面的initializer可以是[1,2,3,4]这样的列表，也可以是tf.random.initializer(),也可以是np.ones()
 with tf.Session() as sess:
     sess.run(tf.group(tf.local_variables_initializer(),tf.global_variables_initializer()))
     print(sess.run(my_variable))
+#
+#
+a=tf.get_variable("input",[2,3],initializer=tf.random_normal_initializer())
+with tf.Session() as sess:
+    tf.global_variables_initializer().run()
+    print(sess.run(a))
