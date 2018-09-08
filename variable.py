@@ -15,3 +15,7 @@ a=tf.get_variable("input",[2,3],initializer=tf.random_normal_initializer())
 with tf.Session() as sess:
     tf.global_variables_initializer().run()
     print(sess.run(a))
+#部分初始化变量
+with tf.Session() sess:
+    sess.run(a.initializer)#初始后面没有括号,这个操作只负责初始化
+    print(sess.run(a))
