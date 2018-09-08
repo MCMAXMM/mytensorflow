@@ -94,41 +94,27 @@ for _ in range(20):
     sess.run(next_element)
 #第四种迭代器，可以和tf.placeholder一块使用
 
-
-
-# Define training and validation datasets with the same structure.
-training_dataset = tf.data.Dataset.range(100).map(
-    lambda x: x + tf.random_uniform([], -10, 10, tf.int64)).repeat()
-validation_dataset = tf.data.Dataset.range(50)
-
-# A feedable iterator is defined by a handle placeholder and its structure. We
-# could use the `output_types` and `output_shapes` properties of either
-# `training_dataset` or `validation_dataset` here, because they have
-# identical structure.
-handle = tf.placeholder(tf.string, shape=[])
-iterator = tf.data.Iterator.from_string_handle(
-    handle, training_dataset.output_types, training_dataset.output_shapes)
-next_element = iterator.get_next()
-
-# You can use feedable iterators with a variety of different kinds of iterator
-# (such as one-shot and initializable iterators).
-training_iterator = training_dataset.make_one_shot_iterator()
-validation_iterator = validation_dataset.make_initializable_iterator()
-
-# The `Iterator.string_handle()` method returns a tensor that can be evaluated
-# and used to feed the `handle` placeholder.
-training_handle = sess.run(training_iterator.string_handle())
-validation_handle = sess.run(validation_iterator.string_handle())
-
-# Loop forever, alternating between training and validation.
-while True:
-  # Run 200 steps using the training dataset. Note that the training dataset is
-  # infinite, and we resume from where we left off in the previous `while` loop
-  # iteration.
-  for _ in range(200):
-    sess.run(next_element, feed_dict={handle: training_handle})
-
-  # Run one pass over the validation dataset.
-  sess.run(validation_iterator.initializer)
-  for _ in range(50):
-    sess.run(next_element, feed
+import tensorflow as tf
+#第一步创建数据集
+training_dataset=tf.data.Dataset.range(100).map(lambda x: x+tf.random_uniform([],-10,10,tf.int64)).repeat()
+validation_dataset=tf.data.Dataset.range(50)
+#第二步创建handle
+handle=tf.placeholder(tf.string,shape=[])
+#使用Iterator创建一个iterator，更像一个管道中介用来流数据的
+iterator=tf.data.Iterator.from_string_handle(handle,training_dataset.output_types,training_dataset.output_shapes)
+next_element=iterator.get_next()
+#创建数据集的iterator
+training_iterator=training_dataset.make_one_shot_iterator()
+validation_iterator=validation_dataset.make_initializable_iterator()
+with tf.Session() as sess:
+    #获取handle
+    training_handle=sess.run(training_iterator.string_handle())
+    print(training_handle)
+    validation_handle = sess.run(validation_iterator.string_handle())
+    while True:
+        for _ in range(200):
+            #通过handle来获取数据
+            print(sess.run(next_element,feed_dict={handle:training_handle}))
+        sess.run(validation_iterator.initializer)
+        for _ in range(50):
+            print(sess.run(next_element, feed_dict={handle: validation_handle}))
