@@ -30,7 +30,7 @@ dataset2 = dataset2.flat_map(lambda x, y: ...)
 dataset3 = dataset3.filter(lambda x, (y, z): ...)
 
 
-
+#前两种迭代器是通过dataset中iterator实现的，后两种是通过tf.data.Iterator.来创建迭代器
 ############################################3
 #第一种迭代器，这是最简单的迭代器，不用初始化，如果不调用repeat()只能使用一次
 #one-shot,
