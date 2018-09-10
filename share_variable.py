@@ -23,4 +23,29 @@ with tf.variable_scope("model") as scope:
   output1 = my_image_filter(input1)
 with tf.variable_scope(scope, reuse=True):
   output2 = my_image_filter(input2)
+######################
+#########################
+#########################
+#我的练习代码
+import tensorflow as tf
+with tf.variable_scope("a_variable_scope") as scope:
+    initializer=tf.constant_initializer(5.0)
+    var3=tf.get_variable(name="var3",shape=[1],dtype=tf.float32,initializer=initializer)
+    print(tf.get_variable_scope())#<tensorflow.python.ops.variable_scope.VariableScope object at 0x000000001784B898>
+    var4 = tf.get_variable(name="var4", initializer=tf.constant([4.1],dtype=tf.float32),dtype=tf.float32)
+    scope.reuse_variables()
 
+    print(tf.get_variable_scope())#<tensorflow.python.ops.variable_scope.VariableScope object at 0x000000001784B898>
+    var3_reuse=tf.get_variable(name="var3")
+    var4_reuse=tf.get_variable(name="var4",initializer=tf.constant([4.0]),dtype=tf.float32)
+    #重用后的变量，变量名字（里面那个name）必须相同，数据类型必须相同，数值不必相同
+    b=tf.assign(var4_reuse,[5.0])#给重用后的变量4重新赋值
+print(var3.name)#a_variable_scope/var3:0
+print(var3_reuse.name)#a_variable_scope/var3:0
+print(var4.name)#a_variable_scope/var4:0
+print(var4_reuse.name)#a_variable_scope/var4:0
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(sess.run(b))#[5.]
+    print(sess.run(var4_reuse))#[5.]
+    print(sess.run(var4))#[5.]
