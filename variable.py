@@ -19,3 +19,10 @@ with tf.Session() as sess:
 with tf.Session() sess:
     sess.run(a.initializer)#初始后面没有括号,这个操作只负责初始化
     print(sess.run(a))
+####变量的名字
+import tensorflow as tf
+with tf.name_scope("machao"):
+    a=tf.Variable(1.0,name="a")
+    b=tf.get_variable("b",initializer=tf.constant(1.0))
+print(a)#<tf.Variable 'machao/a:0' shape=() dtype=float32_ref>
+print(b)#<tf.Variable 'b:0' shape=() dtype=float32_ref>
