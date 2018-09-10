@@ -73,10 +73,11 @@ validation_dataset = tf.data.Dataset.range(50)
 # A reinitializable iterator is defined by its structure. We could use the
 # `output_types` and `output_shapes` properties of either `training_dataset`
 # or `validation_dataset` here, because they are compatible.
+#tf.data.Iterator只是形式上的迭代器，在下面你需要用不同的数据集做初始化
 iterator = tf.data.Iterator.from_structure(training_dataset.output_types,
                                            training_dataset.output_shapes)
 next_element = iterator.get_next()
-
+#对iterator做数据集的初始化
 training_init_op = iterator.make_initializer(training_dataset)
 validation_init_op = iterator.make_initializer(validation_dataset)
 
@@ -103,7 +104,7 @@ handle=tf.placeholder(tf.string,shape=[])
 #使用Iterator创建一个iterator，更像一个管道中介用来流数据的
 iterator=tf.data.Iterator.from_string_handle(handle,training_dataset.output_types,training_dataset.output_shapes)
 next_element=iterator.get_next()
-#创建数据集的iterator
+#创建数据集的iterator，即迭代器数据集的初始化
 training_iterator=training_dataset.make_one_shot_iterator()
 validation_iterator=validation_dataset.make_initializable_iterator()
 with tf.Session() as sess:
