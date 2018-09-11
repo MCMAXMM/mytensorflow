@@ -1,4 +1,5 @@
 import tensorflow as tf
+#动态图的梯度下降
 tf.enable_eager_execution()
 
 X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
@@ -26,3 +27,10 @@ for i in range(100):
     grads = tape.gradient(loss, model.variables)#计算梯度
     optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
 print(model.variables)
+
+#静态图的梯度下降
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate_)
+grad = optimizer.compute_gradients(loss)
+train_op = optimizer.apply_gradients(grad)
+#以上三行代码等于一行代码
+train_op = tf.train.GradientDescentOptimizer(learning_rate=learning_rate_).minimize(loss)
