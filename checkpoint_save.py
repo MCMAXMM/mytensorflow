@@ -2,7 +2,20 @@ import tensorflow as tf
 import numpy as np
 from zh.model.mlp.mlp import MLP
 from zh.model.mlp.utils import DataLoader
-
+#正常save和restore
+# train.py 模型训练阶段
+#save
+# model = MyModel()
+# checkpoint = tf.train.Checkpoint(myModel=model)     # 实例化Checkpoint，指定保存对象为model（如果需要保存Optimizer的参数也可加入）
+# # 模型训练代码
+# checkpoint.save('./save/model.ckpt')                # 模型训练完毕后将参数保存到文件，也可以在模型训练过程中每隔一段时间就保存一次
+#restore
+# test.py 模型使用阶段
+#SAVE
+# model = MyModel()
+# checkpoint = tf.train.Checkpoint(myModel=model)             # 实例化Checkpoint，指定恢复对象为model
+# checkpoint.restore(tf.train.latest_checkpoint('./save'))    # 从文件恢复模型参数
+# # 模型使用代码
 tf.enable_eager_execution()
 mode = 'test'
 num_batches = 1000
