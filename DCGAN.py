@@ -76,7 +76,8 @@ discriminator = Discriminator()
 #1) 正演计算
 #2) 梯度的反演计算
 #3) 将梯度应用于变量
-
+generator.call=tf.contrib.eager.defun(generator.call)
+discriminator.call=tf.contrib.eager.defun(generator.call)
 def discriminator_loss(real_output, generated_output):
     # [1,1,...,1] with real output since it is true and we want
     # our generated examples to look like it
