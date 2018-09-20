@@ -1,3 +1,4 @@
+#该代码原文网址如下：https://github.com/tensorflow/tensorflow/blob/r1.11/tensorflow/contrib/eager/python/examples/generative_examples/cvae.ipynb
 from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 tfe=tf.contrib.eager
@@ -34,30 +35,37 @@ class CVAE(tf.keras.Model):
     def __init__(self,latent_dim):
         super(CVAE,self).__init__()
         self.latent_dim=latent_dim
-        #推断网络  X--->Z ——encoder
+        #推断网络  X--->Z ——encoder  q(z|x)
         self.inference_net=tf.keras.Sequential([tf.keras.layers.InputLayer(input_shape=(28,28,1)),
         tf.keras.layers.Conv2D(32,3,(2,2),activation=tf.nn.relu),
         tf.keras.layers.Conv2D(64,3,(2,2),activation=tf.nn.relu),tf.keras.layers.Flatten(),
                                                 tf.keras.layers.Dense(latent_dim+latent_dim),])
-        #生成网络 Z--->X ——decoder
+        #生成网络 Z--->X ——decoder p(x|x)
         self.generative_net=tf.keras.Sequential([tf.keras.layers.InputLayer(input_shape=(latent_dim,)),
                                                  tf.keras.layers.Dense(units=7*7*32,activation=tf.nn.relu),
-                                                 tf.keras.layers.Reshape(target_shape=(7,7,32)),
+                                                 tf.keras.layers.Reshape(target_shape=(7,7,32)),#[-1,7,7,32]
+                                                 #[-1,14,14,64]
                                                  tf.keras.layers.Conv2DTranspose(64,3,(2,2),padding="same",activation=tf.nn.relu),
+                                                 #[-1,28,28,32]
                                                  tf.keras.layers.Conv2DTranspose(32,3,(2,2),padding="same",activation=tf.nn.relu),
+                                                 #[-1,28,28,1]
                                                  tf.keras.layers.Conv2DTranspose(1,3,(1,1),padding="same"),])
     #这个函数用来测试时生成数据来观察效果的
     def sample(self,eps=None):
         if eps is None:
             eps=tf.random_normal(shape=(100,self.latent_dim))
-        return self.decode(eps,apply_sigmoid=True)#p(x|z)
+        return self.decode(eps,apply_sigmoid=True)#p(x|z) 解码器
     
     def encode(self,x):
         mean,logvar=tf.split(self.inference_net(x),num_or_size_splits=2,axis=1)#q(z|x)
+        #tf.split会把数据平均分成（num_or_size_splits）份，axis指的是按照那个轴来划分数据
         return mean,logvar#inference返回的是latent变量的均值，log方差（对角矩阵）
+    
     def reparameterize(self,mean,logvar):
         eps=tf.random_normal(shape=mean.shape)
-        return eps*tf.exp(logvar*.5)+mean
+        return eps*tf.exp(logvar*.5)+mean#重新参数化数据，相当于从q(z|x)中抽数据
+        #重新参数化后我们可以看到数据抽样那个过程是从标准正态分布中抽样，抽样过程不再与q(z|x)的均值方差有关
+        #这样就可以反向传播梯度，不然你得从q(z|x)这个正态分布中抽z，抽完之后无法反向传播均值方差到相关参数上
     def decode(self,z,apply_sigmoid=False):
         logits=self.generative_net(z)
         if apply_sigmoid:
@@ -65,18 +73,19 @@ class CVAE(tf.keras.Model):
             return probs
         return logits
    
-
+#计算三项中每一项的logP
 def log_normal_pdf(sample, mean, logvar, raxis=1):
   log2pi = tf.log(2. * np.pi)
   return tf.reduce_sum(
       -.5 * ((sample - mean) ** 2. * tf.exp(-logvar) + logvar + log2pi),
-      axis=raxis)
+      axis=raxis)#有些项的常数给省略了
+#f(z)=1(2π√)nσze−z22=1(2π√)n|∑|12e−(x − μx)T (∑)−1 (x − μx)2
 #真正的训练过程
 def compute_loss(model, x):
   mean, logvar = model.encode(x)#q(z|x)
   #抽样Gaussian	N(μ;RR⊤)可以重新参数化 从一个简单分布中抽	ϵ∼N(0;1)得到的这个值μ+Rϵ服从所要求的分布
   #详细的介绍在这个网址http://blog.shakirm.com/2015/10/machine-learning-trick-of-the-day-4-reparameterisation-tricks/
-  z = model.reparameterize(mean, logvar)#重新参数化有关z的东西，
+  z = model.reparameterize(mean, logvar)#重新参数化有关z的东西，其实这个函数相当于从q(z|x)中抽样本
   x_logit = model.decode(z)#p(x|z)，p(z)是正太分布是隐含的，当最大化ELOB时,q(z|x)是接近p(z)
 
   cross_ent = tf.nn.sigmoid_cross_entropy_with_logits(logits=x_logit, labels=x)
@@ -100,9 +109,9 @@ latent_dim = 50#z即隐藏变量的维度为50
 num_examples_to_generate = 16
 random_vector_for_generation = tf.random_normal(
       shape=[num_examples_to_generate, latent_dim])
-model = CVAE(latent_dim)
+model = CVAE(latent_dim)#创建模型
 def generate_and_save_images(model, epoch, test_input):
-    predictions = model.sample(test_input)
+    predictions = model.sample(test_input)#训练好时可以生成数据
     fig = plt.figure(figsize=(4,4))
 
     for i in range(predictions.shape[0]):
