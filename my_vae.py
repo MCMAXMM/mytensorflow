@@ -81,7 +81,7 @@ def compute_loss(model, x):
 
   cross_ent = tf.nn.sigmoid_cross_entropy_with_logits(logits=x_logit, labels=x)
   logpx_z = -tf.reduce_sum(cross_ent, axis=[1, 2, 3])#重建误差
-  #下面为公式中的三项（logp(x|z)+logp(z)-logq(z|x))，z是从q(z|x)中抽的样本
+  #下面为公式中的三项（logp(x|z)+logp(z)-logq(z|x))，这个公式中的三个z都是从q(z|x)中抽的样本z
   #使用多元正态分布的公式计算他们的logp
   logpz = log_normal_pdf(z, 0., 0.)#此处的z为重新参数化后的z，为q(z|x)中的z
   logqz_x = log_normal_pdf(z, mean, logvar)#算出概率
