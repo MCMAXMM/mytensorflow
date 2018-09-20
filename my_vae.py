@@ -26,7 +26,7 @@ test_images[test_images<.5]=0
 TRAIN_BUF=60000
 BATCH_SIZE=100
 TEST_BUF=10000
-#生成数据集
+#生成数据集 数据量有点大我把数据设成200
 train_dataset=tf.data.Dataset.from_tensor_slices(train_images[1:200]).shuffle(TRAIN_BUF).batch(BATCH_SIZE)
 test_dataset=tf.data.Dataset.from_tensor_slices(test_images[1:200]).shuffle(TEST_BUF).batch(BATCH_SIZE)
 #define model
@@ -46,11 +46,12 @@ class CVAE(tf.keras.Model):
                                                  tf.keras.layers.Conv2DTranspose(64,3,(2,2),padding="same",activation=tf.nn.relu),
                                                  tf.keras.layers.Conv2DTranspose(32,3,(2,2),padding="same",activation=tf.nn.relu),
                                                  tf.keras.layers.Conv2DTranspose(1,3,(1,1),padding="same"),])
-    def sample(self,eps=None):#抽样Gaussian	N(μ;RR⊤)可以重新参数化 从一个简单分布中抽	ϵ∼N(0;1)得到的这个值μ+Rϵ服从所要求的分布
-    #详细的介绍在这个网址http://blog.shakirm.com/2015/10/machine-learning-trick-of-the-day-4-reparameterisation-tricks/
+    #这个函数用来测试时生成数据来观察效果的
+    def sample(self,eps=None):
         if eps is None:
-            eps=tf.random_normal(shape=(100,self.latent_dim))#p(z)
+            eps=tf.random_normal(shape=(100,self.latent_dim))
         return self.decode(eps,apply_sigmoid=True)#p(x|z)
+    
     def encode(self,x):
         mean,logvar=tf.split(self.inference_net(x),num_or_size_splits=2,axis=1)#q(z|x)
         return mean,logvar#inference返回的是latent变量的均值，log方差（对角矩阵）
@@ -63,21 +64,27 @@ class CVAE(tf.keras.Model):
             probs=tf.sigmoid(logits)
             return probs
         return logits
+   
+
 def log_normal_pdf(sample, mean, logvar, raxis=1):
   log2pi = tf.log(2. * np.pi)
   return tf.reduce_sum(
       -.5 * ((sample - mean) ** 2. * tf.exp(-logvar) + logvar + log2pi),
       axis=raxis)
-
+#真正的训练过程
 def compute_loss(model, x):
   mean, logvar = model.encode(x)#q(z|x)
-  z = model.reparameterize(mean, logvar)#重新参数化有关z的东西
-  x_logit = model.decode(z)#p(x|z)
+  #抽样Gaussian	N(μ;RR⊤)可以重新参数化 从一个简单分布中抽	ϵ∼N(0;1)得到的这个值μ+Rϵ服从所要求的分布
+  #详细的介绍在这个网址http://blog.shakirm.com/2015/10/machine-learning-trick-of-the-day-4-reparameterisation-tricks/
+  z = model.reparameterize(mean, logvar)#重新参数化有关z的东西，
+  x_logit = model.decode(z)#p(x|z)，p(z)是正太分布是隐含的，当最大化ELOB时,q(z|x)是接近p(z)
 
   cross_ent = tf.nn.sigmoid_cross_entropy_with_logits(logits=x_logit, labels=x)
-  logpx_z = -tf.reduce_sum(cross_ent, axis=[1, 2, 3])
-  logpz = log_normal_pdf(z, 0., 0.)
-  logqz_x = log_normal_pdf(z, mean, logvar)
+  logpx_z = -tf.reduce_sum(cross_ent, axis=[1, 2, 3])#重建误差
+  #下面为公式中的三项（logp(x|z)+logp(z)-logq(z|x))，z是从q(z|x)中抽的样本
+  #使用多元正态分布的公式计算他们的logp
+  logpz = log_normal_pdf(z, 0., 0.)#此处的z为重新参数化后的z，为q(z|x)中的z
+  logqz_x = log_normal_pdf(z, mean, logvar)#算出概率
   return -tf.reduce_mean(logpx_z + logpz - logqz_x)
 
 def compute_gradients(model, x):
@@ -89,7 +96,7 @@ optimizer = tf.train.AdamOptimizer(1e-4)
 def apply_gradients(optimizer, gradients, variables, global_step=None):
     optimizer.apply_gradients(zip(gradients, variables), global_step=global_step)
 epochs = 100
-latent_dim = 50
+latent_dim = 50#z即隐藏变量的维度为50
 num_examples_to_generate = 16
 random_vector_for_generation = tf.random_normal(
       shape=[num_examples_to_generate, latent_dim])
