@@ -12,3 +12,8 @@ image=tf.image.decode_jpeg(image)#相当于将二进制数据解码成jpeg格式
 #有其他的如.decode_bmp() .decode_gif(),.decode_png()等等
 #是0—255之间的tensor数据
 print(image)
+#使用dataset获取各个图片的路径
+train_dataset = tf.data.Dataset.list_files(r"D:\pythonrun\2018613pytorch\faces\*.jpg")
+train_dataset=train_dataset.make_one_shot_iterator()
+print(train_dataset.get_next())
+#output：tf.Tensor(b'D:\\pythonrun\\2018613pytorch\\faces\\1084239450_e76e00b7e7.jpg', shape=(), dtype=string)
