@@ -17,3 +17,7 @@ train_dataset = tf.data.Dataset.list_files(r"D:\pythonrun\2018613pytorch\faces\*
 train_dataset=train_dataset.make_one_shot_iterator()
 print(train_dataset.get_next())
 #output：tf.Tensor(b'D:\\pythonrun\\2018613pytorch\\faces\\1084239450_e76e00b7e7.jpg', shape=(), dtype=string)
+train_dataset = train_dataset.shuffle(BUFFER_SIZE)
+#下面使用自己定义的load_image()函数来对数据集中每个图片的路径进行处理返回训练的图片
+train_dataset = train_dataset.map(lambda x: load_image(x, True))
+train_dataset = train_dataset.batch(1)
