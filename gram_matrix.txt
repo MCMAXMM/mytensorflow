@@ -1,4 +1,5 @@
 首先我们理一下Gram Matrices的计算过程：
 假设输入图像经过卷积后，得到的feature map为[b, ch, h, w]。我们经过flatten和矩阵转置操作，
-可以变形为[b, ch, h*w]和[b, h*w, ch]的矩阵。将这两个矩阵的1，2维作矩阵内积得到[b, ch, ch]大小的矩阵，这就是我们所说的Gram Matrices。
+可以变形为[b, ch, h*w]和[b, h*w, ch]的矩阵。将这两个矩阵的1，2维作矩阵内积得到[b, ch, ch]大小的矩阵，
+其实，相当于计算不同channel之间的相关性，这就是我们所说的Gram Matrices。
 
