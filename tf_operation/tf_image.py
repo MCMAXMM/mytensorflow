@@ -21,3 +21,22 @@ train_dataset = train_dataset.shuffle(BUFFER_SIZE)
 #下面使用自己定义的load_image()函数来对数据集中每个图片的路径进行处理返回训练的图片
 train_dataset = train_dataset.map(lambda x: load_image(x, True))
 train_dataset = train_dataset.batch(1)
+
+#使用tensorflow加载本地图片
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
+tf.enable_eager_execution()
+b=tf.data.Dataset.list_files(r"D:\pythonrun\2018613pytorch\faces\*.jpg")
+#获取本地图片的路径String
+print(b)
+def load_image(file_path):
+    data=tf.read_file(file_path)
+    image=tf.image.decode_jpeg(data)
+    return image#解码成jpeg
+
+b=b.map(lambda x:load_image(x))
+c=b.make_one_shot_iterator().get_next()
+a=np.array(c).astype(np.int16)
+plt.imshow(a)#显示图片
+plt.show()
