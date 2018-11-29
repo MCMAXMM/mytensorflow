@@ -12,3 +12,10 @@ c=tf.stack([x,y,z],axis=2)#[2,2,3]
 print(a)
 print(b)
 print(c)
+#tf.get_variable,只需初始化名字和形状，他会帮你随机初始化，当然你可以自己制定初始化器
+a=tf.get_variable("machao",(1,2,3))
+b=tf.get_variable("adsf",(2,3,4),initializer=tf.uniform_unit_scaling_initializer)
+print(a)
+print(a.shape)
+print(b)
+
