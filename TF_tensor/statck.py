@@ -13,6 +13,8 @@ print(a)
 print(b)
 print(c)
 #tf.get_variable,只需初始化名字和形状，他会帮你随机初始化，当然你可以自己制定初始化器
+
+#请注意，当初始化器是 tf.Tensor 时，您不应指定变量的形状，因为将使用初始化器张量的形状
 a=tf.get_variable("machao",(1,2,3))
 b=tf.get_variable("adsf",(2,3,4),initializer=tf.uniform_unit_scaling_initializer)
 print(a)
