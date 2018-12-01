@@ -26,7 +26,7 @@ with tf.variable_scope(scope, reuse=True):
 ######################
 #########################
 #########################
-#我的练习代码
+#我的练习代码1
 import tensorflow as tf
 with tf.variable_scope("a_variable_scope") as scope:
     initializer=tf.constant_initializer(5.0)
@@ -49,3 +49,42 @@ with tf.Session() as sess:
     print(sess.run(b))#[5.]
     print(sess.run(var4_reuse))#[5.]
     print(sess.run(var4))#[5.]
+#我的练习代码2
+import tensorflow as tf
+#设定随机种子，使得每次随机初始化都一样
+tf.set_random_seed(1234)
+#这是我们要共享的变量函数
+def share_variable(input):
+    weight=tf.get_variable("weight",[2,2])
+    return weight
+#定义一个输入
+input=tf.get_variable("input",[3,2])
+#第一次使用
+with tf.variable_scope("hello"):
+    weight1=share_variable(input)
+#第二次使用，但是没有reuse参数，而是rebuild参数
+with tf.variable_scope("nohello"):
+    weight2=share_variable(input)
+#第三次使用，设定reuse=True，使用第一次使用的参数
+with tf.variable_scope("hello",reuse=True):
+    weight3 = share_variable(input)
+with tf.Session() as sess:
+    #初始化变量
+    initia=tf.global_variables_initializer()
+    sess.run(initia)
+
+    print(sess.run(weight1))
+    #第一次的参数输出结果：
+    #[[ 0.8520416  -0.92069757]
+     #[ 1.0747026   0.05705893]]
+
+    print(sess.run(weight2))
+    #第二次参数输出结果：    
+    #[[-0.20162821  0.6593205 ]
+     #[ 0.22376633 -1.188595  ]]
+ 
+    print(sess.run(weight3))
+    #第三次参数输出结果：
+    #[[ 0.8520416  -0.92069757]
+     #[ 1.0747026   0.05705893]]
+    #我们可以看到第三次和第一次的参数是一样的
