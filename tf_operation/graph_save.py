@@ -1,3 +1,4 @@
+#详细都在这个网站上
 import tensorflow as tf
 # path='./checkpoint_dir/machao.ckpt'
 # w1 = tf.Variable(tf.random_normal(shape=[2]), name='w1')
