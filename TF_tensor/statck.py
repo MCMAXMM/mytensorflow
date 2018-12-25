@@ -21,3 +21,12 @@ print(a)
 print(a.shape)
 print(b)
 
+import tensorflow as tf
+tf.enable_eager_execution()
+#tf.stack其实就是堆叠，也就是将两个tensor堆积起来，axis控制在那个轴堆叠，
+d=tf.read_file(r"D:\download\Downloads\facades\train\1.jpg")
+d=tf.image.decode_jpeg(d)
+d1=d[:,0:256,:]
+d2=d[:,256:,:]
+a=tf.stack((d1,d2),axis=2)
+print(tf.shape(a))
