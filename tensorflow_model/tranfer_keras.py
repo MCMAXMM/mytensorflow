@@ -1,3 +1,4 @@
+# this code is from https://github.com/keras-team/keras/blob/master/examples/mnist_transfer_cnn.py
 from __future__ import print_function
 
 import datetime
