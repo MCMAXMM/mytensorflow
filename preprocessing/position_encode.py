@@ -1,7 +1,7 @@
 import numpy as np
 #demension
 import matplotlib.pyplot as plt
-i=np.arange(0,256)
+dims=np.arange(0,256)
 positions=np.arange(0,20)
 def com_encod(pos,i):
     x=np.sin(position/(np.power(10000.,2.*i/512.)))
@@ -10,10 +10,10 @@ def com_encod(pos,i):
 d1=np.zeros([20,256])
 d2=np.zeros([20,256])
 for position in positions:
-    for dim in i:
-        x,y=com_encod(position,i)
-        d1[position][i]=x
-        d2[position][i]=y
+    for dim in dims:
+        x,y=com_encod(position,dim)
+        d1[position][dim]=x
+        d2[position][dim]=y
 d=np.concatenate((d1,d2),axis=1)
 plt.matshow(d,fignum=40)
 plt.show()
