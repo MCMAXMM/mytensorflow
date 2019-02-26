@@ -86,3 +86,8 @@ logging.basicConfig(format="%(asctime)s : %(levelname)s : %(message)s",level=log
 # print(model["dogs"])
 model=word2vec.Word2Vec.load("word2vec.model")
 print(model["dogs"])
+#模型格式有两种bin和model，使用方式：
+#a. bin模式：model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
+#b. model模式：model = gensim.models.Word2Vec.load(model_path)
+
+
