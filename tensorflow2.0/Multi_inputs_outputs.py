@@ -28,3 +28,29 @@ department_pred = layers.Dense(num_departments, activation='softmax', name='depa
 # Instantiate an end-to-end model predicting both priority and department
 model = keras.Model(inputs=[title_input, body_input, tags_input],
                     outputs=[priority_pred, department_pred])
+
+##编译1
+model.compile(optimizer=keras.optimizers.RMSprop(1e-3),
+              loss=['binary_crossentropy', 'categorical_crossentropy'],
+              loss_weights=[1., 0.2])
+##编译2
+model.compile(optimizer=keras.optimizers.RMSprop(1e-3),
+              loss={'priority': 'binary_crossentropy',
+                    'department': 'categorical_crossentropy'},
+              loss_weights=[1., 0.2])
+
+#具体训练
+import numpy as np
+
+# Dummy input data
+title_data = np.random.randint(num_words, size=(1280, 10))
+body_data = np.random.randint(num_words, size=(1280, 100))
+tags_data = np.random.randint(2, size=(1280, num_tags)).astype('float32')
+# Dummy target data
+priority_targets = np.random.random(size=(1280, 1))
+dept_targets = np.random.randint(2, size=(1280, num_departments))
+
+model.fit({'title': title_data, 'body': body_data, 'tags': tags_data},
+          {'priority': priority_targets, 'department': dept_targets},
+          epochs=2,
+          batch_size=32)#与前面定义的input，output名字对应
