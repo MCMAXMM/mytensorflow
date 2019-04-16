@@ -2,8 +2,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import numpy as np
 import pandas as pd
-
-!pip install -q tensorflow==2.0.0-alpha0
 import tensorflow as tf
 
 from tensorflow import feature_column
@@ -30,7 +28,7 @@ feature_columns = []
 # numeric cols
 for header in ['age', 'trestbps', 'chol', 'thalach', 'oldpeak', 'slope', 'ca']:
   feature_columns.append(feature_column.numeric_column(header))
-
+age=feature_column.numeric_column(age)
 # bucketized cols
 age_buckets = feature_column.bucketized_column(age, boundaries=[18, 25, 30, 35, 40, 45, 50, 55, 60, 65])
 feature_columns.append(age_buckets)
