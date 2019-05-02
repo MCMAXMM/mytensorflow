@@ -7,7 +7,7 @@ tf.enable_eager_execution()
 #multiples: A Tensor. Must be one of the following types: int32, int64. 1-D. Length must be the same as the number of dimensions in input
 #name: A name for the operation (optional).
 input=tf.constant([[1,2,3,4],[1,2,3,4]],dtype=tf.float32)
-a=tf.tile(input,[3,2])#[3,2]指的是在第一个维度上扩充三倍，第二个维度上扩充两倍
+a=tf.tile(input,[3,2])#[3,2]指的是在第一个维度上是原来的三倍，第二个维度上是原来的两倍
 #multiples必须带[]
 print(a)
 输出为：
