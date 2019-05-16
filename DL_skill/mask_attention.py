@@ -6,6 +6,7 @@ def vanilla_attention(queries, keys, keys_length):
     keys:        [B, T, H]
     keys_length: [B]
   '''
+  #key_length里面存储的是每个时间序列的实际长度
   #queries = tf.tile(queries, [1, 2])
   queries = tf.expand_dims(queries, 1) # [B, 1, H]
   # Multiplication
